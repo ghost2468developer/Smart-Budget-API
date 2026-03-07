@@ -50,7 +50,7 @@ export const deleteDebt = async (req: AuthRequest, res: Response) => {
     return res.status(401).json({ error: "Unauthorized" })
   }
 
-  // Ensure `id` is a string (Express can make it string | string[])
+  // `id` is a string (Express can make it string | string[])
   if (Array.isArray(id)) id = id[0]
 
   try {

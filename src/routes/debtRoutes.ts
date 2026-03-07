@@ -4,7 +4,7 @@ import { authenticate } from "../middleware/authMiddleware"
 
 const router = Router()
 
-router.use(authenticate) // Protect all debt routes
+router.use(authenticate)
 
 router.post("/", addDebt)
 router.get("/", getDebts)

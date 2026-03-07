@@ -43,7 +43,7 @@ export const getSavingsGoals = async (req: AuthRequest, res: Response) => {
   }
 }
 
-// Update a savings goal (e.g., currentAmount)
+// Update a savings goal
 export const updateSavingsGoal = async (req: AuthRequest, res: Response) => {
   let { id } = req.params
   const { currentAmount } = req.body
@@ -52,7 +52,7 @@ export const updateSavingsGoal = async (req: AuthRequest, res: Response) => {
     return res.status(401).json({ error: "Unauthorized" })
   }
 
-  // Ensure `id` is a string
+  // `id` is a string
   if (Array.isArray(id)) id = id[0]
 
   try {
@@ -80,7 +80,7 @@ export const deleteSavingsGoal = async (req: AuthRequest, res: Response) => {
     return res.status(401).json({ error: "Unauthorized" })
   }
 
-  // Ensure `id` is a string (Express can make it string | string[])
+  // `id` is a string (Express can make it string | string[])
   if (Array.isArray(id)) id = id[0]
 
   try {

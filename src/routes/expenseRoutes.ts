@@ -4,7 +4,7 @@ import { authenticate } from "../middleware/authMiddleware"
 
 const router = Router()
 
-router.use(authenticate) // Protect all expense routes
+router.use(authenticate)
 
 router.post("/", addExpense)
 router.get("/", getExpenses)
