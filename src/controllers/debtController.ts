@@ -43,11 +43,25 @@ export const getDebts = async (req: AuthRequest, res: Response) => {
   }
 }
 
-// Delete a debt
 export const deleteDebt = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params
+  let { id } = req.params
+
+  if (!req.userId) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+
+  // Ensure `id` is a string (Express can make it string | string[])
+  if (Array.isArray(id)) id = id[0]
+
   try {
-    await prisma.debt.deleteMany({ where: { id, userId: req.userId } })
+    const deleted = await prisma.debt.deleteMany({
+      where: { id, userId: req.userId },
+    })
+
+    if (deleted.count === 0) {
+      return res.status(404).json({ error: "Debt not found" })
+    }
+
     res.json({ message: "Debt deleted" })
   } catch (err) {
     console.error(err)

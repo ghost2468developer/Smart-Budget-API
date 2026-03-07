@@ -45,14 +45,26 @@ export const getSavingsGoals = async (req: AuthRequest, res: Response) => {
 
 // Update a savings goal (e.g., currentAmount)
 export const updateSavingsGoal = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params
+  let { id } = req.params
   const { currentAmount } = req.body
+
+  if (!req.userId) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+
+  // Ensure `id` is a string
+  if (Array.isArray(id)) id = id[0]
 
   try {
     const updated = await prisma.savingsGoal.updateMany({
       where: { id, userId: req.userId },
       data: { currentAmount },
     })
+
+    if (updated.count === 0) {
+      return res.status(404).json({ error: "Savings goal not found" })
+    }
+
     res.json({ message: "Savings goal updated", updated })
   } catch (err) {
     console.error(err)
@@ -62,10 +74,24 @@ export const updateSavingsGoal = async (req: AuthRequest, res: Response) => {
 
 // Delete a savings goal
 export const deleteSavingsGoal = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params
+  let { id } = req.params
+
+  if (!req.userId) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+
+  // Ensure `id` is a string (Express can make it string | string[])
+  if (Array.isArray(id)) id = id[0]
 
   try {
-    await prisma.savingsGoal.deleteMany({ where: { id, userId: req.userId } })
+    const deleted = await prisma.savingsGoal.deleteMany({
+      where: { id, userId: req.userId },
+    })
+
+    if (deleted.count === 0) {
+      return res.status(404).json({ error: "Savings goal not found" })
+    }
+
     res.json({ message: "Savings goal deleted" })
   } catch (err) {
     console.error(err)
