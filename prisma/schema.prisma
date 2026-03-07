@@ -4,6 +4,7 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// prisma/schema.prisma
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -14,9 +15,39 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  expenses     Expense[]
+  savingsGoals SavingsGoal[]
+  debts        Debt[]
+}
+
+model Expense {
+  id       String   @id @default(uuid())
+  userId   String
+  category String
+  amount   Float
+  date     DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model SavingsGoal {
+  id            String @id @default(uuid())
+  userId        String
+  title         String
+  targetAmount  Float
+  currentAmount Float
+  user          User   @relation(fields: [userId], references: [id])
+}
+
+model Debt {
+  id             String @id @default(uuid())
+  userId         String
+  amount         Float
+  interestRate   Float
+  monthlyPayment Float
+  user           User   @relation(fields: [userId], references: [id])
 }
