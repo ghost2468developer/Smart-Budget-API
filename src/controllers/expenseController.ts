@@ -1,64 +1,30 @@
 import { Request, Response } from "express"
-import prisma from "../utils/prisma"
-
-interface AuthRequest extends Request {
-  userId?: string
-}
+import { AuthRequest } from "../types/auth"
+import { createExpense, getUserExpenses, deleteExpenseById } from "../services/expenseService"
+import { createExpenseSchema } from "../validators/expenseValidator"
 
 export const addExpense = async (req: AuthRequest, res: Response) => {
-  const { category, amount } = req.body
-  const userId = req.userId
-
-  if (!category || !amount) {
-    return res.status(400).json({ error: "Category and amount required" })
-  }
-
   try {
-    const expense = await prisma.expense.create({
-      data: { category, amount, userId: userId! },
-    })
+    const validated = createExpenseSchema.parse(req.body)
+    const expense = await createExpense(req.userId!, validated.category, validated.amount)
     res.status(201).json(expense)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: "Server error" })
+  } catch (err: any) {
+    res.status(400).json({ error: err.message })
   }
 }
 
 export const getExpenses = async (req: AuthRequest, res: Response) => {
-  try {
-    const expenses = await prisma.expense.findMany({
-      where: { userId: req.userId },
-      orderBy: { date: "desc" },
-    })
-    res.json(expenses)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: "Server error" })
-  }
+  const expenses = await getUserExpenses(req.userId!)
+  res.json(expenses)
 }
 
 export const deleteExpense = async (req: AuthRequest, res: Response) => {
   let { id } = req.params
-
-  if (!req.userId) {
-    return res.status(401).json({ error: "Unauthorized" })
-  }
-
-  // `id` is a string (Express can make it string | string[])
+  if (!id) return res.status(400).json({ error: "Expense ID required" })
   if (Array.isArray(id)) id = id[0]
 
-  try {
-    const deleted = await prisma.expense.deleteMany({
-      where: { id, userId: req.userId },
-    })
+  const deleted = await deleteExpenseById(req.userId!, id)
+  if (deleted.count === 0) return res.status(404).json({ error: "Expense not found" })
 
-    if (deleted.count === 0) {
-      return res.status(404).json({ error: "Expense not found" })
-    }
-
-    res.json({ message: "Expense deleted" })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: "Server error" })
-  }
+  res.json({ message: "Expense deleted" })
 }
