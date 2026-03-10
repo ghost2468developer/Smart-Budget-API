@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run prisma-studio\"",
-    "server": "ts-node-dev src/index.ts", 
+    "server": "ts-node-dev src/index.ts",
     "prisma-studio": "prisma studio"
   },
   "repository": {
@@ -27,7 +27,8 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "prisma": "^4.15.0"
+    "prisma": "^4.15.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
