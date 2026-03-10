@@ -32,6 +32,8 @@ model Expense {
   amount   Float
   date     DateTime @default(now())
   user     User     @relation(fields: [userId], references: [id])
+  @@index([userId])
+  @@index([userId, date])
 }
 
 model SavingsGoal {
@@ -41,6 +43,7 @@ model SavingsGoal {
   targetAmount  Float
   currentAmount Float
   user          User   @relation(fields: [userId], references: [id])
+  @@index([userId])
 }
 
 model Debt {
@@ -50,4 +53,5 @@ model Debt {
   interestRate   Float
   monthlyPayment Float
   user           User   @relation(fields: [userId], references: [id])
+  @@index([userId])
 }
