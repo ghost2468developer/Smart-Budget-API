@@ -1,9 +1,6 @@
 import { Request, Response } from "express"
 import prisma from "../utils/prisma"
-
-interface AuthRequest extends Request {
-  userId?: string
-}
+import { AuthRequest } from "../types/auth"
 
 // Add a savings goal
 export const addSavingsGoal = async (req: AuthRequest, res: Response) => {
